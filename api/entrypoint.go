@@ -24,13 +24,13 @@ func myRoute(r *gin.RouterGroup){
 		c.String(http.StatusOK,"Hello from golang in vercel")
 	})
 
-	r.GET("/api/name", getName)
-	r.GET("/api/assignments", getAssignments)
-	r.GET("/api/info", getInfo)
-	r.GET("/api/averages", getAverages)
-	r.GET("/api/classes", getClasses)
-	r.GET("/api/reportcard", getReport)
-	r.GET("/api/ipr", getProgressReport)
+	r.GET("/name", getName)
+	r.GET("/assignments", getAssignments)
+	r.GET("/info", getInfo)
+	r.GET("/averages", getAverages)
+	r.GET("/classes", getClasses)
+	r.GET("/reportcard", getReport)
+	r.GET("/ipr", getProgressReport)
 }
 
 func init(){
