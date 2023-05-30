@@ -61,6 +61,11 @@ func init(){
 		c.JSON(200, message)
 	})
 
+	app.GET("/favicon.ico", func(c *gin.Context) {
+		// return static/favicon.ico
+		c.File("./favicon.ico")
+	})
+
 }
 
 // ADD THIS SCRIPT
