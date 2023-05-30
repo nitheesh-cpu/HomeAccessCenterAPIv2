@@ -1,9 +1,9 @@
 {
-	"trailingSlash":false,
+	"trailingSlash":true,
 	"rewrites":
 	[
 		{
-			"source":"/api(.*)",
+			"source":"/api/(.*)",
 			"destination":"/api/entrypoint.go"
 		}
 	]
