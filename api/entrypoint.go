@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gocolly/colly"
 	"github.com/iancoleman/orderedmap"
+	"github.com/thinkerou/favicon"
 )
 
 var (
@@ -50,7 +51,7 @@ func init() {
 	r := app.Group("/api")
 	myRoute(r)
 
-	app.Static("/static", "./static")
+	app.Use(favicon.New("./static/favicon.ico"))
 
 	message := orderedmap.New()
 	message.Set("title", "Welcome to the Home Access Center API!")
@@ -59,11 +60,6 @@ func init() {
 
 	app.GET("/", func(c *gin.Context) {
 		c.JSON(200, message)
-	})
-
-	app.GET("/favicon.ico", func(c *gin.Context) {
-		// return static/favicon.ico
-		c.File("./static/favicon.ico")
 	})
 
 }
