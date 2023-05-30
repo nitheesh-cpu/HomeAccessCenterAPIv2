@@ -50,8 +50,6 @@ func init() {
 	r := app.Group("/api")
 	myRoute(r)
 
-	app.StaticFile("/favicon.ico", "./api/static/favicon.ico")
-
 	message := orderedmap.New()
 	message.Set("title", "Welcome to the Home Access Center API!")
 	message.Set("message", "This is the home page, visit the documentation at https://homeaccesscenterapi-docs.vercel.app/ for more information on how to use this API.")
