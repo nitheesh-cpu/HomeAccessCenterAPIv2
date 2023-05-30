@@ -66,7 +66,10 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	app.ServeHTTP(w, r)
 }
 
-func loginHandler(username, password string) (*colly.Collector, error) {
+func loginHandler(username, password string, link string) (*colly.Collector, error) {
+	
+	var loginLink string = link + "/HomeAccess/Account/LogOn"
+
 	c := colly.NewCollector()
 	c.UserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36"
 
@@ -100,7 +103,7 @@ func loginHandler(username, password string) (*colly.Collector, error) {
 			loginData["__RequestVerificationToken"] = requestVerificationToken
 
 			// post login data and print response
-			err := c.Post("https://homeaccess.katyisd.org/HomeAccess/Account/LogOn", loginData)
+			err := c.Post(loginLink, loginData)
 			if err != nil {
 				fmt.Println(loginData)
 			}
@@ -118,7 +121,7 @@ func loginHandler(username, password string) (*colly.Collector, error) {
 		}
 	})
 
-	err := c.Visit("https://homeaccess.katyisd.org/HomeAccess/Account/LogOn")
+	err := c.Visit(loginLink)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +137,8 @@ func getName(c *gin.Context) {
 	// Call the loginHandler to perform the login process
 	username := c.Query("user")
 	password := c.Query("pass")
-	collector, err := loginHandler(username, password)
+	link := c.DefaultQuery("link", "https://homeaccess.katyisd.org")
+	collector, err := loginHandler(username, password, link)
 	if err != nil {
 		// Handle the login error
 		if err.Error() == "Invalid username or password" {
@@ -164,7 +168,8 @@ func getName(c *gin.Context) {
 func getAssignments(c *gin.Context) {
 	username := c.Query("user")
 	password := c.Query("pass")
-	collector, err := loginHandler(username, password)
+	link := c.DefaultQuery("link", "https://homeaccess.katyisd.org")
+	collector, err := loginHandler(username, password, link)
 	if err != nil {
 		// Handle the login error
 		if err.Error() == "Invalid username or password" {
@@ -248,7 +253,8 @@ func getAssignments(c *gin.Context) {
 func getInfo(c *gin.Context) {
 	username := c.Query("user")
 	password := c.Query("pass")
-	collector, err := loginHandler(username, password)
+	link := c.DefaultQuery("link", "https://homeaccess.katyisd.org")
+	collector, err := loginHandler(username, password, link)
 	if err != nil {
 		// Handle the login error
 		if err.Error() == "Invalid username or password" {
@@ -295,7 +301,8 @@ func getInfo(c *gin.Context) {
 func getAverages(c *gin.Context) {
 	username := c.Query("user")
 	password := c.Query("pass")
-	collector, err := loginHandler(username, password)
+	link := c.DefaultQuery("link", "https://homeaccess.katyisd.org")
+	collector, err := loginHandler(username, password, link)
 	if err != nil {
 		// Handle the login error
 		if err.Error() == "Invalid username or password" {
@@ -337,7 +344,8 @@ func getAverages(c *gin.Context) {
 func getClasses(c *gin.Context) {
 	username := c.Query("user")
 	password := c.Query("pass")
-	collector, err := loginHandler(username, password)
+	link := c.DefaultQuery("link", "https://homeaccess.katyisd.org")
+	collector, err := loginHandler(username, password, link)
 	if err != nil {
 		// Handle the login error
 		if err.Error() == "Invalid username or password" {
@@ -370,7 +378,8 @@ func getClasses(c *gin.Context) {
 func getReport(c *gin.Context) {
 	username := c.Query("user")
 	password := c.Query("pass")
-	collector, err := loginHandler(username, password)
+	link := c.DefaultQuery("link", "https://homeaccess.katyisd.org")
+	collector, err := loginHandler(username, password, link)
 	if err != nil {
 		// Handle the login error
 		if err.Error() == "Invalid username or password" {
@@ -420,7 +429,8 @@ func getReport(c *gin.Context) {
 func getProgressReport(c *gin.Context) {
 	username := c.Query("user")
 	password := c.Query("pass")
-	collector, err := loginHandler(username, password)
+	link := c.DefaultQuery("link", "https://homeaccess.katyisd.org")
+	collector, err := loginHandler(username, password, link)
 	if err != nil {
 		// Handle the login error
 		if err.Error() == "Invalid username or password" {
