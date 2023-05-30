@@ -36,7 +36,7 @@ func myRoute(r *gin.RouterGroup){
 	message.Set("message", "This is the home page, visit the documentation at https://homeaccesscenterapi-docs.vercel.app/ for more information on how to use this API.")
 	message.Set("routes", []string{"/api/name", "/api/assignments", "/api/info", "/api/averages", "/api/classes", "/api/reportcard", "/api/ipr"})
 
-	r.GET("/", func(c *gin.Context) {
+	r.GET("/help", func(c *gin.Context) {
 		c.JSON(200, message)
 	})
 
