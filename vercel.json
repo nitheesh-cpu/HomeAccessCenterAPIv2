@@ -1,0 +1,11 @@
+{
+	"trailingSlash":false,
+	"rewrites":
+	[
+		{
+			"source":"/api(.*)",
+			"destination":"/api/main.go"
+		}
+	]
+
+}
