@@ -1,26 +1,25 @@
 package api
 
 import (
-	"net/http"
-	"fmt"
 	"errors"
+	"fmt"
+	"net/http"
 	"strings"
 
-	"github.com/gocolly/colly"
-	"github.com/gin-gonic/gin"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/gin-gonic/gin"
+	"github.com/gocolly/colly"
 	"github.com/iancoleman/orderedmap"
 )
 
-var(
+var (
 	app *gin.Engine
-
 )
 
 // CREATE ENDPOIND
-func myRoute(r *gin.RouterGroup){
-	r.GET("/admin",func(c *gin.Context){
-		c.String(http.StatusOK,"Hello from golang in vercel")
+func myRoute(r *gin.RouterGroup) {
+	r.GET("/admin", func(c *gin.Context) {
+		c.String(http.StatusOK, "Hello from golang in vercel")
 	})
 
 	r.GET("/name", getName)
@@ -39,19 +38,18 @@ func myRoute(r *gin.RouterGroup){
 	r.GET("/help", func(c *gin.Context) {
 		c.JSON(200, message)
 	})
-	
+
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, message)
 	})
 
 }
 
-func init(){
+func init() {
 	app = gin.New()
 	r := app.Group("/api")
 	myRoute(r)
 
-	
 	message := orderedmap.New()
 	message.Set("title", "Welcome to the Home Access Center API!")
 	message.Set("message", "This is the home page, visit the documentation at https://homeaccesscenterapi-docs.vercel.app/ for more information on how to use this API.")
@@ -63,14 +61,14 @@ func init(){
 
 	app.GET("/favicon.ico", func(c *gin.Context) {
 		// return static/favicon.ico
-		c.File("./favicon.ico")
+		c.File("./static/favicon.ico")
 	})
 
 }
 
 // ADD THIS SCRIPT
-func Handler(w http.ResponseWriter , r *http.Request){
-	app.ServeHTTP(w,r)
+func Handler(w http.ResponseWriter, r *http.Request) {
+	app.ServeHTTP(w, r)
 }
 
 func loginHandler(username, password string) (*colly.Collector, error) {
@@ -167,7 +165,6 @@ func getName(c *gin.Context) {
 		return
 	}
 }
-
 
 func getAssignments(c *gin.Context) {
 	username := c.Query("user")
