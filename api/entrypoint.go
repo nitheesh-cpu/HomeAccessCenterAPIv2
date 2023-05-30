@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"errors"
 	"strings"
+	"net/http/cookiejar"
 
 	"github.com/gocolly/colly"
 	"github.com/gin-gonic/gin"
@@ -61,6 +62,33 @@ func Handler(w http.ResponseWriter , r *http.Request){
 func loginHandler(username, password string) (*colly.Collector, error) {
 	c := colly.NewCollector()
 	c.UserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36"
+
+	// Set up a cookie jar to manage cookies
+	cookieJar, _ := cookiejar.New(nil)
+	c.SetCookieJar(cookieJar)
+
+	// Create a custom HTTP client with a connection pool
+	httpClient := &http.Client{
+		Transport: &http.Transport{
+			MaxIdleConns:        10,
+			MaxIdleConnsPerHost: 10,
+		},
+	}
+
+	// Create a custom RoundTripper using the httpClient
+	transport := &http.Transport{
+		Proxy:                 http.ProxyFromEnvironment,
+		DialContext:           httpClient.Transport.(*http.Transport).DialContext,
+		ForceAttemptHTTP2:     httpClient.Transport.(*http.Transport).ForceAttemptHTTP2,
+		MaxIdleConns:          httpClient.Transport.(*http.Transport).MaxIdleConns,
+		MaxIdleConnsPerHost:   httpClient.Transport.(*http.Transport).MaxIdleConnsPerHost,
+		IdleConnTimeout:       httpClient.Transport.(*http.Transport).IdleConnTimeout,
+		TLSHandshakeTimeout:   httpClient.Transport.(*http.Transport).TLSHandshakeTimeout,
+		ExpectContinueTimeout: httpClient.Transport.(*http.Transport).ExpectContinueTimeout,
+		ResponseHeaderTimeout: httpClient.Transport.(*http.Transport).ResponseHeaderTimeout,
+	}
+
+	c.WithTransport(transport)
 
 	// Create a login data map to store login data
 	loginData := map[string]string{
@@ -121,6 +149,8 @@ func loginHandler(username, password string) (*colly.Collector, error) {
 		return nil, errors.New("Invalid username or password")
 	}
 }
+
+
 
 func getName(c *gin.Context) {
 	// Call the loginHandler to perform the login process
