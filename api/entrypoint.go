@@ -51,7 +51,7 @@ func init() {
 	r := app.Group("/api")
 	myRoute(r)
 
-	app.Use(favicon.New("./static/favicon.ico"))
+	app.StaticFile("/favicon.ico", "./api/static/favicon.ico")
 
 	message := orderedmap.New()
 	message.Set("title", "Welcome to the Home Access Center API!")
