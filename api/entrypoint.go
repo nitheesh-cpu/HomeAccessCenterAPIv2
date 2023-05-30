@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gocolly/colly"
 	"github.com/iancoleman/orderedmap"
-	"github.com/thinkerou/favicon"
 )
 
 var (
