@@ -67,7 +67,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginHandler(username, password string, link string) (*colly.Collector, error) {
-	
+	link = strings.TrimSuffix(link, "/")
 	var loginLink string = link + "/HomeAccess/Account/LogOn"
 
 	c := colly.NewCollector()
