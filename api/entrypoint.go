@@ -504,7 +504,7 @@ func getTranscript(c *gin.Context){
 				semester.Set("semester", el.Text)
 			} else if strings.Contains(el.Attr("id"), "GradeValue") {
 				semester.Set("grade", el.Text)
-			} else if strings.Contains(el.Attr("id"), "SchoolValue") {
+			} else if strings.Contains(el.Attr("id"), "BuildingValue") {
 				semester.Set("school", el.Text)
 			}
 		})
