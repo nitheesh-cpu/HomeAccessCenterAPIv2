@@ -519,7 +519,9 @@ func getTranscript(c *gin.Context){
 				el.ForEach("td", func(_ int, el2 *colly.HTMLElement) {
 					data = append(data, el2.Text)
 				})
-				semester.Set("data", data)
+				existingData, _ := semester.Get("data")
+				existingData = append(existingData.([]string), data...)
+				semester.Set("data", existingData)
 				data = make([]string, 0)
 			}
 		})
