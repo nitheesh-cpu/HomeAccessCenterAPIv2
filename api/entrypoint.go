@@ -539,6 +539,29 @@ func getTranscript(c *gin.Context){
 		transcript.Set(title, semester)
 	})
 
+	collector.OnHTML("table#plnMain_rpTranscriptGroup_tblCumGPAInfo", func(e *colly.HTMLElement) {
+		e.ForEach("tbody > tr.sg-asp-table-data-row", func(_ int, el *colly.HTMLElement) {
+			var text string
+			var value string
+			el.ForEach(" td > span", func(_ int, el2 *colly.HTMLElement) {
+				if strings.Contains(el2.Attr("id"), "GPADescr") {
+					text = el2.Text
+				}
+				if strings.Contains(el2.Attr("id"), "GPACum") {
+					value = el2.Text
+				}
+				if strings.Contains(el2.Attr("id"), "GPARank") {
+					transcript.Set("rank", el2.Text)
+				}
+				if strings.Contains(el2.Attr("id"), "GPAQuartile") {
+					transcript.Set("quartile", el2.Text)
+				}
+				
+			})
+			transcript.Set(text, value)
+		})
+	})
+
 	collector.OnScraped(func(r *colly.Response) {
 		c.JSON(200, transcript)
 	})
