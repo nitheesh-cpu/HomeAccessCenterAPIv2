@@ -29,6 +29,7 @@ func myRoute(r *gin.RouterGroup) {
 	r.GET("/classes", getClasses)
 	r.GET("/reportcard", getReport)
 	r.GET("/ipr", getProgressReport)
+	r.GET("/transcript", getTranscript)
 
 	message := orderedmap.New()
 	message.Set("title", "Welcome to the Home Access Center API!")
@@ -475,17 +476,76 @@ func getProgressReport(c *gin.Context) {
 	c.JSON(200, finalData)
 }
 
-// func getTranscript(c *gin.Context){
-// 	collector, err := loginHandler()
-// 	if err != nil {
-// 		c.JSON(500, gin.H{"error": "Failed to log in"})
-// 		return
-// 	}
+func getTranscript(c *gin.Context){
+	username := c.Query("user")
+	password := c.Query("pass")
+	link := c.DefaultQuery("link", "https://homeaccess.katyisd.org")
+	collector, err := loginHandler(username, password, link)
+	if err != nil {
+		// Handle the login error
+		if err.Error() == "Invalid username or password" {
+			c.JSON(401, gin.H{"error": "Invalid username or password"})
+		} else {
+			c.JSON(500, gin.H{"error": "Failed to log in"})
+		}
+		return
+	}
 
-// 	finalData := make(map[string]interface{})
-// 	transcript := make(map[string]interface{})
+	transcript := orderedmap.New()
 
-// 	collector.OnHTML("div.sg-trancript-group", func(e *colly.HTMLElement) {
-// 		semester := make(map[string]interface{})
-// 		table1 := e.
-// }
+	collector.OnHTML("td.sg-transcript-group", func(e *colly.HTMLElement) {
+		semester := orderedmap.New()
+
+		// First table
+		e.ForEach("table > tbody > tr > td > span", func(_ int, el *colly.HTMLElement) {
+			if strings.Contains(el.Attr("id"), "YearValue") {
+				semester.Set("year", el.Text)
+			} else if strings.Contains(el.Attr("id"), "GroupValue") {
+				semester.Set("semester", el.Text)
+			} else if strings.Contains(el.Attr("id"), "GradeValue") {
+				semester.Set("grade", el.Text)
+			} else if strings.Contains(el.Attr("id"), "SchoolValue") {
+				semester.Set("school", el.Text)
+			}
+		})
+
+		
+		data := make([]string, 0)
+
+		// Second table
+		e.ForEach("table:nth-child(2) > tbody > tr", func(_ int, el *colly.HTMLElement) {
+			if strings.Contains(el.Attr("class"), "sg-asp-table-header-row") ||
+				strings.Contains(el.Attr("class"), "sg-asp-table-data-row") {
+				el.ForEach("td", func(_ int, el2 *colly.HTMLElement) {
+					data = append(data, el2.Text)
+				})
+				semester.Set("data", data)
+				data = make([]string, 0)
+			}
+		})
+
+		// Third table
+		e.ForEach("table:nth-child(3) > tbody > tr > td > label", func(_ int, el *colly.HTMLElement) {
+			if strings.Contains(el.Attr("id"), "CreditValue") {
+				semester.Set("credits", el.Text)
+			}
+		})
+		
+		year, _ := semester.Get("year")
+		semesterNum, _ := semester.Get("semester")
+		title := year.(string) + " - Semester " + semesterNum.(string)
+		fmt.Println(title)
+
+		transcript.Set(title, semester)
+	})
+
+	collector.OnScraped(func(r *colly.Response) {
+		c.JSON(200, transcript)
+	})
+
+	err = collector.Visit(link+"/HomeAccess/Content/Student/Transcript.aspx")
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to scrape data"})
+		return
+	}
+}
