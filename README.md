@@ -17,6 +17,8 @@ The following table compares the performance of Python and Go for each endpoint:
 | Endpoint       | Python (v1) | Go (v2) |
 |----------------|-------------|---------|
 | /info          | 1800 ms     | 1500 ms |
+| /rank          | 2000 ms     | 1500 ms |
+| /transcript    | 2100 ms     | 1500 ms |
 | /name          | 2400 ms     | 1500 ms |
 | /ipr           | 2600 ms     | 2000 ms |
 | /reportcard    | 3200 ms     | 2700 ms |
