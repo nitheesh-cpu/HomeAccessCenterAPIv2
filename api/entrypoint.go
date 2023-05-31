@@ -30,6 +30,7 @@ func myRoute(r *gin.RouterGroup) {
 	r.GET("/reportcard", getReport)
 	r.GET("/ipr", getProgressReport)
 	r.GET("/transcript", getTranscript)
+	r.GET("/rank", getRank)
 
 	message := orderedmap.New()
 	message.Set("title", "Welcome to the Home Access Center API!")
@@ -540,6 +541,57 @@ func getTranscript(c *gin.Context){
 
 		transcript.Set(title, semester)
 	})
+
+	collector.OnHTML("table#plnMain_rpTranscriptGroup_tblCumGPAInfo", func(e *colly.HTMLElement) {
+		e.ForEach("tbody > tr.sg-asp-table-data-row", func(_ int, el *colly.HTMLElement) {
+			var text string
+			var value string
+			el.ForEach(" td > span", func(_ int, el2 *colly.HTMLElement) {
+				if strings.Contains(el2.Attr("id"), "GPADescr") {
+					text = el2.Text
+				}
+				if strings.Contains(el2.Attr("id"), "GPACum") {
+					value = el2.Text
+				}
+				if strings.Contains(el2.Attr("id"), "GPARank") {
+					transcript.Set("rank", el2.Text)
+				}
+				if strings.Contains(el2.Attr("id"), "GPAQuartile") {
+					transcript.Set("quartile", el2.Text)
+				}
+				
+			})
+			transcript.Set(text, value)
+		})
+	})
+
+	collector.OnScraped(func(r *colly.Response) {
+		c.JSON(200, transcript)
+	})
+
+	err = collector.Visit(link+"/HomeAccess/Content/Student/Transcript.aspx")
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to scrape data"})
+		return
+	}
+}
+
+func getRank(c *gin.Context){
+	username := c.Query("user")
+	password := c.Query("pass")
+	link := c.DefaultQuery("link", "https://homeaccess.katyisd.org")
+	collector, err := loginHandler(username, password, link)
+	if err != nil {
+		// Handle the login error
+		if err.Error() == "Invalid username or password" {
+			c.JSON(401, gin.H{"error": "Invalid username or password"})
+		} else {
+			c.JSON(500, gin.H{"error": "Failed to log in"})
+		}
+		return
+	}
+
+	transcript := orderedmap.New()
 
 	collector.OnHTML("table#plnMain_rpTranscriptGroup_tblCumGPAInfo", func(e *colly.HTMLElement) {
 		e.ForEach("tbody > tr.sg-asp-table-data-row", func(_ int, el *colly.HTMLElement) {
